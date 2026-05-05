@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/divisas-lat/go-sdk/cache"
+	"github.com/divisas-lat/go-sdk/enums"
 	"github.com/divisas-lat/go-sdk/models"
 )
 
@@ -82,6 +83,27 @@ func (c *Client) Query() *QueryBuilder {
 	return &QueryBuilder{
 		client: c,
 	}
+}
+
+// GetCountries retrieves all supported countries
+func (c *Client) GetCountries(ctx context.Context) ([]models.CountryResponse, error) {
+	var response []models.CountryResponse
+	err := c.request(ctx, http.MethodGet, "/countries", nil, &response)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+// GetCurrencies retrieves all supported currencies for a specific country
+func (c *Client) GetCurrencies(ctx context.Context, country enums.Country) ([]string, error) {
+	var response []string
+	endpoint := fmt.Sprintf("/%s/currencies", country)
+	err := c.request(ctx, http.MethodGet, endpoint, nil, &response)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
 }
 
 // request executes the HTTP request, managing authentication and caching

@@ -9,6 +9,12 @@ type CurrencyRate struct {
 	Date         *string `json:"date,omitempty"`
 }
 
+// CountryResponse represents a supported country
+type CountryResponse struct {
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
 // TodayRatesResponse represents the response for current day's exchange rates
 type TodayRatesResponse struct {
 	Country       string         `json:"country"`
