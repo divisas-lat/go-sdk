@@ -55,8 +55,12 @@ func (qb *QueryBuilder) GetToday(ctx context.Context) (*models.TodayRatesRespons
 		return nil, errors.New("country is required, use ForCountry()")
 	}
 
-	endpoint := fmt.Sprintf("/rates/%s", qb.country)
+	endpoint := fmt.Sprintf("/%s/rates", qb.country)
+	if qb.currency != "" {
+		endpoint = fmt.Sprintf("/%s/rates/%s", qb.country, qb.currency)
+	}
 	q := qb.buildQuery()
+	q.Del("currency") // already in path
 
 	var response models.TodayRatesResponse
 	err := qb.client.request(ctx, http.MethodGet, endpoint, q, &response)
@@ -76,7 +80,7 @@ func (qb *QueryBuilder) Convert(ctx context.Context, targetCurrency enums.Curren
 		return nil, errors.New("target currency is required")
 	}
 
-	endpoint := fmt.Sprintf("/rates/%s/convert", qb.country)
+	endpoint := fmt.Sprintf("/%s/rates/convert", qb.country)
 	q := qb.buildQuery()
 	q.Set("to", string(targetCurrency))
 	q.Set("amount", strconv.FormatFloat(amount, 'f', -1, 64))
@@ -99,13 +103,13 @@ func (qb *QueryBuilder) GetHistory(ctx context.Context, startDate, endDate strin
 		return nil, errors.New("currency is required for historical data, use WithCurrency()")
 	}
 
-	endpoint := fmt.Sprintf("/rates/%s/history", qb.country)
+	endpoint := fmt.Sprintf("/%s/rates/history", qb.country)
 	q := qb.buildQuery()
 	if startDate != "" {
-		q.Set("start_date", startDate)
+		q.Set("from", startDate)
 	}
 	if endDate != "" {
-		q.Set("end_date", endDate)
+		q.Set("to", endDate)
 	}
 
 	var response models.HistoricalRateResponse
@@ -123,7 +127,7 @@ func (qb *QueryBuilder) GetStats(ctx context.Context, period string) (*models.St
 		return nil, errors.New("country is required, use ForCountry()")
 	}
 
-	endpoint := fmt.Sprintf("/rates/%s/stats", qb.country)
+	endpoint := fmt.Sprintf("/%s/rates/stats", qb.country)
 	q := qb.buildQuery()
 	if period != "" {
 		q.Set("period", period)
@@ -144,7 +148,7 @@ func (qb *QueryBuilder) GetForecast(ctx context.Context, days int) (*models.Fore
 		return nil, errors.New("country is required, use ForCountry()")
 	}
 
-	endpoint := fmt.Sprintf("/rates/%s/forecast", qb.country)
+	endpoint := fmt.Sprintf("/%s/rates/forecast", qb.country)
 	q := qb.buildQuery()
 	if days > 0 {
 		q.Set("days", strconv.Itoa(days))
@@ -165,7 +169,7 @@ func (qb *QueryBuilder) GetPercentile(ctx context.Context, period string) (*mode
 		return nil, errors.New("country is required, use ForCountry()")
 	}
 
-	endpoint := fmt.Sprintf("/rates/%s/percentile", qb.country)
+	endpoint := fmt.Sprintf("/%s/rates/percentile", qb.country)
 	q := qb.buildQuery()
 	if period != "" {
 		q.Set("period", period)

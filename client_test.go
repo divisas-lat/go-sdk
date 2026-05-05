@@ -26,8 +26,8 @@ func TestClient_GetToday(t *testing.T) {
 	}`
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/api/v1/rates/GT" {
-			t.Errorf("Expected path /api/v1/rates/GT, got %s", r.URL.Path)
+		if r.URL.Path != "/v1/GT/rates" {
+			t.Errorf("Expected path /v1/GT/rates, got %s", r.URL.Path)
 		}
 		if r.Header.Get("Authorization") != "Bearer test-key" {
 			t.Errorf("Expected Bearer test-key, got %s", r.Header.Get("Authorization"))
@@ -39,7 +39,7 @@ func TestClient_GetToday(t *testing.T) {
 
 	client := divisas.NewClient(
 		divisas.WithAPIKey("test-key"),
-		divisas.WithBaseURL(server.URL+"/api/v1"),
+		divisas.WithBaseURL(server.URL+"/v1"),
 	)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -80,8 +80,8 @@ func TestClient_Convert(t *testing.T) {
 	}`
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/api/v1/rates/GT/convert" {
-			t.Errorf("Expected path /api/v1/rates/GT/convert, got %s", r.URL.Path)
+		if r.URL.Path != "/v1/GT/rates/convert" {
+			t.Errorf("Expected path /v1/GT/rates/convert, got %s", r.URL.Path)
 		}
 		if r.URL.Query().Get("currency") != "USD" {
 			t.Errorf("Expected query currency=USD, got %s", r.URL.Query().Get("currency"))
@@ -98,7 +98,7 @@ func TestClient_Convert(t *testing.T) {
 	defer server.Close()
 
 	client := divisas.NewClient(
-		divisas.WithBaseURL(server.URL+"/api/v1"),
+		divisas.WithBaseURL(server.URL+"/v1"),
 	)
 
 	ctx := context.Background()

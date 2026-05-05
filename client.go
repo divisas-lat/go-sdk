@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	DefaultBaseURL = "https://api.divisas.lat/api/v1"
+	DefaultBaseURL = "https://api.divisas.lat/v1"
 	DefaultCacheTTL = 3600 * time.Second
 )
 
